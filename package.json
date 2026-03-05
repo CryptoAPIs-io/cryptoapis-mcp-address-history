@@ -1,7 +1,7 @@
 {
   "name": "@cryptoapis-io/mcp-address-history",
-  "version": "0.2.2",
-  "description": "MCP server for retrieving full transaction and token history for EVM and UTXO blockchain addresses via Crypto APIs",
+  "version": "0.2.3",
+  "description": "MCP server for full transaction and token history on EVM and UTXO addresses via Crypto APIs",
   "license": "MIT",
   "author": "Crypto APIs, Inc.",
   "repository": {
