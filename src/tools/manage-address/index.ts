@@ -1,4 +1,4 @@
-import type { CryptoApisHttpClient, RequestResult, DangerousActionMap } from "@cryptoapis-io/mcp-shared";
+import type { CryptoApisHttpClient, RequestResult, DangerousActionMap, McpLogger } from "@cryptoapis-io/mcp-shared";
 import {
     BLOCKCHAIN_NETWORK_DESCRIPTION,
     requiresConfirmation,
@@ -56,7 +56,7 @@ ${BLOCKCHAIN_NETWORK_DESCRIPTION}${formatDangerousActionsWarning(DANGEROUS_ACTIO
     },
     inputSchema: ManageAddressToolSchema,
     handler:
-        (client: CryptoApisHttpClient) =>
+        (client: CryptoApisHttpClient, logger: McpLogger) =>
         async (input: ManageAddressInput) => {
             const dangerousAction = await requiresConfirmation(input.action, DANGEROUS_ACTIONS, input.confirmationToken);
             if (dangerousAction) {
@@ -99,7 +99,20 @@ ${BLOCKCHAIN_NETWORK_DESCRIPTION}${formatDangerousActionsWarning(DANGEROUS_ACTIO
                         context: input.context,
                     });
                     break;
+                default:
+                    throw new Error(`Unknown action: ${(input as any).action}`);
             }
+
+            logger.logInfo({
+                tool: "manage_address",
+                action: input.action,
+                blockchain: input.blockchain,
+                network: input.network,
+                creditsConsumed: result.creditsConsumed,
+                creditsAvailable: result.creditsAvailable,
+                responseTime: result.responseTime,
+                throughputUsage: result.throughputUsage,
+            });
 
             return {
                 content: [{ type: "text", text: JSON.stringify({
