@@ -1,33 +1,23 @@
+import { parseHttpCliOptions } from "@cryptoapis-io/mcp-shared";
 import { startAddressHistoryServer } from "./server.js";
 
 function getArg(name: string): string | undefined {
     const idx = process.argv.indexOf(`--${name}`);
-    if (idx === -1) return undefined;
-    return process.argv[idx + 1];
-}
-
-function hasFlag(name: string): boolean {
-    return process.argv.includes(`--${name}`);
+    return idx === -1 ? undefined : process.argv[idx + 1];
 }
 
 async function main() {
     const transport = (getArg("transport") ?? "stdio") as "stdio" | "http";
     const apiKey = getArg("api-key");
-
     if (transport === "stdio") {
         await startAddressHistoryServer({ transport: "stdio", apiKey });
         return;
     }
-
-    const host = getArg("host") ?? "0.0.0.0";
-    const port = Number(getArg("port") ?? "3000");
-    const path = getArg("path") ?? "/mcp";
-    const stateless = hasFlag("stateless");
-
-    await startAddressHistoryServer({ transport: "http", host, port, path, stateless, apiKey });
+    // --host (default 127.0.0.1), --port, --path, --stateless, --auth-token / MCP_AUTH_TOKEN, --allowed-hosts
+    await startAddressHistoryServer({ transport: "http", apiKey, ...parseHttpCliOptions() });
 }
 
 main().catch((err) => {
-    console.error(err);
+    console.error(err instanceof Error ? err.message : err);
     process.exit(1);
 });

@@ -1,5 +1,36 @@
 # @cryptoapis-io/mcp-address-history
 
+## 0.4.0
+
+### Minor Changes
+
+- 3167621: Security: the HTTP transport no longer serves unauthenticated callers with the operator's API key.
+
+  Before, `--transport http --api-key <key>` listened on `0.0.0.0` and never authenticated the caller, so anyone who could reach the port could call every tool on the operator's key: spend their credits, and create, deactivate or delete their blockchain-event webhooks and HD-wallet syncs.
+
+  - HTTP mode now listens on `127.0.0.1` by default, with DNS rebinding protection (Host header check).
+  - Listening on a non-loopback address (`--host 0.0.0.0`) with a startup API key requires an auth token (`MCP_AUTH_TOKEN` or `--auth-token`); callers send `Authorization: Bearer <token>`. Without one the server refuses to start.
+  - New `--allowed-hosts` restricts the Host header on non-loopback binds.
+  - Per-request key mode (no startup key) now rejects requests without an `x-api-key` header with 401.
+  - Stateful HTTP mode keeps one session per client; previously only the first client could ever connect.
+
+  Breaking: clients connecting from another machine or container must now start the server with `--host 0.0.0.0` and an auth token. Reported by Syed Anas Mohiuddin.
+
+### Patch Changes
+
+- Updated dependencies [3167621]
+  - @cryptoapis-io/mcp-shared@0.4.0
+
+## 0.3.1
+
+### Patch Changes
+
+- eade12a: Reject action+blockchain combinations that aren't actually supported by that action, instead of only failing at the API (BL-0165 item 3).
+
+  `evm_address_history`'s `get-statistics` and `list-transactions-by-timestamp` actions only support ethereum/ethereum-classic per the spec (not the full 5-chain union used by `list-transactions`/`list-token-transfers`/etc.), and their network enums are narrower too (no testnet/amoy/nile, which belong to bsc/polygon/tron). `utxo_address_history`'s `get-statistics` and `list-transactions-by-timestamp` similarly only support bitcoin/bitcoin-cash, not the full 6-chain UTXO union.
+
+  Each action already had a correctly-scoped Zod enum in its own `schema.ts` (unused dead code); this wires them into the tool handler as a pre-flight check, since cross-field `.superRefine()` on the top-level schema was previously found to break `inputSchema` introspection in MCP clients like the Inspector.
+
 ## 0.3.0
 
 ### Minor Changes

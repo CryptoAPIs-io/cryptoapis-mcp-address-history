@@ -1,7 +1,7 @@
 import type { CryptoApisHttpClient, RequestResult, McpLogger } from "@cryptoapis-io/mcp-shared";
 import { UTXO_BLOCKCHAIN_NETWORK_DESCRIPTION } from "@cryptoapis-io/mcp-shared";
 import type { McpToolDef } from "../types.js";
-import { UtxoAddressToolSchema, type UtxoAddressInput } from "./schema.js";
+import { UtxoAddressToolSchema, type UtxoAddressInput, ACTION_BLOCKCHAINS } from "./schema.js";
 import { handleGetStatistics } from "./get-statistics/index.js";
 import { credits as getStatisticsCredits } from "./get-statistics/credits.js";
 import { handleListTransactions } from "./list-transactions/index.js";
@@ -36,6 +36,13 @@ ${UTXO_BLOCKCHAIN_NETWORK_DESCRIPTION}`,
     handler:
         (client: CryptoApisHttpClient, logger: McpLogger) =>
         async (input: UtxoAddressInput) => {
+            const allowedBlockchains = ACTION_BLOCKCHAINS[input.action];
+            if (allowedBlockchains && !allowedBlockchains.includes(input.blockchain)) {
+                throw new Error(
+                    `blockchain "${input.blockchain}" is not supported by action "${input.action}". Supported: ${allowedBlockchains.join(", ")}`,
+                );
+            }
+
             let result: RequestResult<unknown>;
 
             const baseParams = {
