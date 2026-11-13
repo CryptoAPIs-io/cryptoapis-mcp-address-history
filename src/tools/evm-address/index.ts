@@ -1,3 +1,4 @@
+import { READ_ONLY_TOOL } from "@cryptoapis-io/mcp-shared";
 import type { CryptoApisHttpClient, RequestResult, McpLogger } from "@cryptoapis-io/mcp-shared";
 import { EVM_BLOCKCHAIN_NETWORK_DESCRIPTION } from "@cryptoapis-io/mcp-shared";
 import type { McpToolDef } from "../types.js";
@@ -17,6 +18,8 @@ import { credits as listTokensCredits } from "./list-tokens/credits.js";
 
 export const evmAddressTool: McpToolDef<typeof EvmAddressToolSchema> = {
     name: "evm_address_history",
+    title: "EVM address history",
+    annotations: READ_ONLY_TOOL,
     description: `Query EVM address full history (requires synced address). Cursor pagination: use 'nextStartingAfter' from response as 'startingAfter'.
 
 Actions & supported blockchains:

@@ -1,3 +1,4 @@
+import { READ_ONLY_TOOL } from "@cryptoapis-io/mcp-shared";
 import type { CryptoApisHttpClient, RequestResult, McpLogger } from "@cryptoapis-io/mcp-shared";
 import { UTXO_BLOCKCHAIN_NETWORK_DESCRIPTION } from "@cryptoapis-io/mcp-shared";
 import type { McpToolDef } from "../types.js";
@@ -13,6 +14,8 @@ import { credits as listUnspentOutputsCredits } from "./list-unspent-outputs/cre
 
 export const utxoAddressTool: McpToolDef<typeof UtxoAddressToolSchema> = {
     name: "utxo_address_history",
+    title: "UTXO address history",
+    annotations: READ_ONLY_TOOL,
     description: `Query UTXO address full history (requires synced address).
 
 Pagination:

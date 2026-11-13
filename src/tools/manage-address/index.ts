@@ -1,3 +1,4 @@
+import { DESTRUCTIVE_TOOL } from "@cryptoapis-io/mcp-shared";
 import type { CryptoApisHttpClient, RequestResult, DangerousActionMap, McpLogger } from "@cryptoapis-io/mcp-shared";
 import {
     BLOCKCHAIN_NETWORK_DESCRIPTION,
@@ -39,6 +40,8 @@ const ACTION_CREDITS: Record<string, number> = {
 
 export const manageAddressTool: McpToolDef<typeof ManageAddressToolSchema> = {
     name: "manage_address",
+    title: "Manage synced addresses",
+    annotations: DESTRUCTIVE_TOOL,
     description: `Manage synced addresses for Address History APIs. Cursor pagination for 'list': use 'nextStartingAfter' as 'startingAfter'.
 
 Actions:
